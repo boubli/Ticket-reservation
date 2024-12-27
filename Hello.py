@@ -4,57 +4,55 @@ from tkinter import messagebox
 from dbConnect import DBBConnect
 from ListRequist import LisTicket
 
-dBConnect=DBBConnect()
+dBConnect = DBBConnect()
 
 root = Tk()
-root.title("Ticket reservation")
+root.title("Ticket Reservation")
 root.geometry("550x570+90+90")
 root.configure(background="#2980b9")
 
-#style
+# Style
 style = ttk.Style()
 style.theme_use('classic')
-style.configure('TLabel', background="#2980b9")
-style.configure('TButton', background="#2980b9")
-style.configure('TRadiobutton', background="#2980b9")
+style.configure('TLabel', background="#2980b9", foreground="white", font=('Arial', 12))
+style.configure('TButton', background="#3498db", foreground="white", font=('Arial', 12))
+style.configure('TRadiobutton', background="#2980b9", foreground="white", font=('Arial', 12))
 
-#full Name
-ttk.Label(root, text="Full Name:").grid(row=0, column=0, padx=0, pady=0)
-EntryFullName = ttk.Entry(root, width=30, font=('Arial', 16))
-EntryFullName.grid(row=0, column=1, columnspan=2, pady=10)
+# Full Name
+Label(root, text="Full Name:").grid(row=0, column=0, padx=10, pady=10, sticky=W)
+entry_full_name = ttk.Entry(root, width=30, font=('Arial', 14))
+entry_full_name.grid(row=0, column=1, columnspan=2, pady=10, sticky=W)
 
+# Gender
+Label(root, text="Gender:").grid(row=1, column=0, padx=10, pady=10, sticky=W)
+gender_var = StringVar()
+ttk.Radiobutton(root, text="Male", variable=gender_var, value="Male").grid(row=1, column=1, sticky=W)
+ttk.Radiobutton(root, text="Female", variable=gender_var, value="Female").grid(row=1, column=2, sticky=W)
 
-#gender
-ttk.Label(root, text="Gender:").grid(row=3, column=0, pady=10 )
-SpanGender = StringVar()
-ttk.Radiobutton(root, text="Male", variable=SpanGender, value="Male").grid(row=3, column=1)
-ttk.Radiobutton(root, text="Femle", variable=SpanGender, value="Female").grid(row=3, column=2)
+# Comments
+Label(root, text="Comments:").grid(row=2, column=0, padx=10, pady=10, sticky=NW)
+text_comments = Text(root, width=40, height=10, font=('Arial', 12))
+text_comments.grid(row=2, column=1, columnspan=2, padx=10, pady=10, sticky=W)
 
-# comments
-ttk.Label(root, text="Comments:").grid(row=4, column=0, pady=10 )
-xtComments = Text(root, width=30, height=15, font=('Arial, 16'))
-xtComments.grid(row=4, column=1, columnspan=2, padx=30)
+# Buttons
+btn_save = ttk.Button(root, text="Submit", command=lambda: save_data())
+btn_save.grid(row=3, column=1, pady=20, sticky=W)
 
-#buttons
-buSave = ttk.Button(root, text="Submit")
-buSave.grid(row=5, column=1, pady=10)
-BuList = ttk.Button(root, text="list Res.")
-BuList.grid(row=5, column=2)
+btn_list = ttk.Button(root, text="List Reservations", command=lambda: list_data())
+btn_list.grid(row=3, column=2, pady=20, sticky=W)
 
+# Functions
+def save_data():
+    if not entry_full_name.get().strip() or not gender_var.get():
+        messagebox.showwarning("Input Error", "Please fill in all fields.")
+        return
 
-def BusaveData():
-    msg = dBConnect.Add(EntryFullName.get(),SpanGender.get(),xtComments.get(1.0, 'end'))
-    messagebox.showinfo(title="Add Info", message=msg)
-    EntryFullName.delete(0, 'end')
-    xtComments.delete(1.0, 'end')
+    message = dBConnect.Add(entry_full_name.get().strip(), gender_var.get(), text_comments.get(1.0, 'end').strip())
+    messagebox.showinfo("Success", message)
+    entry_full_name.delete(0, 'end')
+    text_comments.delete(1.0, 'end')
 
-
-def BulistData():
-    #TODO:Show orders
-    ListRequest=LisTicket()
-
-
-buSave.config(command=BusaveData)
-BuList.config(command=BulistData)
+def list_data():
+    LisTicket()
 
 root.mainloop()
